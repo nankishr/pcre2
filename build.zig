@@ -18,7 +18,7 @@ pub fn build(b: *std.Build) !void {
 
     const sljit_is_checked_out = if (!support_jit)
         false
-    else if (b.build_root.handle.access(
+    else if (b.root.access(
         b.graph.io,
         "deps/sljit/sljit_src/sljitLir.c",
         .{},

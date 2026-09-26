@@ -1577,7 +1577,7 @@ NEW_FRAME:
 #endif /* SUPPORT_UNICODE */
 
         /* When not in UTF mode, load a single-code-unit character. Then proceed as
-      above, using Unicode casing if either UTF or UCP is set. */
+        above, using Unicode casing if either UTF or UCP is set. */
 
         Lc = *Fecode++;
 
@@ -3870,7 +3870,7 @@ NEW_FRAME:
 #endif /* SUPPORT_UNICODE */
 
           /* Code for the non-UTF case for minimum matching of operators other
-        than OP_PROP and OP_NOTPROP. */
+          than OP_PROP and OP_NOTPROP. */
 
           switch (Lctype)
           {
@@ -3910,18 +3910,20 @@ NEW_FRAME:
             break;
 
             /* This OP_ANYBYTE case will never be reached because \C gets turned
-          into OP_ALLANY in non-UTF mode. Cut out the code so that coverage
-          reports don't complain about it's never being used. */
+            into OP_ALLANY in non-UTF mode. Cut out the code so that coverage
+            reports don't complain about it's never being used. */
 
-            /*        case OP_ANYBYTE:
-  *        if (Feptr > mb->end_subject - Lmin)
-  *          {
-  *          SCHECK_PARTIAL();
-  *          RRETURN(MATCH_NOMATCH);
-  *          }
-  *        Feptr += Lmin;
-  *        break;
-  */
+            /* case OP_ANYBYTE:
+             *   if (Feptr > mb->end_subject - Lmin)
+             *   {
+             *     SCHECK_PARTIAL();
+             *     RRETURN(MATCH_NOMATCH);
+             *   }
+             *
+             *   Feptr += Lmin;
+             *   break;
+             */
+
           case OP_ANYNL:
             for (i = 1; i <= Lmin; i++)
             {
@@ -7872,6 +7874,7 @@ pcre2_match(const pcre2_code *code, PCRE2_SPTR subject, PCRE2_SIZE length, PCRE2
   }
 
   match_data->subject = NULL;
+  match_data->subject_length = 0;
 
   /* Zero the error offset in case the first code unit is invalid UTF. */
 
@@ -7960,18 +7963,16 @@ pcre2_match(const pcre2_code *code, PCRE2_SPTR subject, PCRE2_SIZE length, PCRE2
     match_data->options = original_options;
     if (rc >= 0 && (options & PCRE2_COPY_MATCHED_SUBJECT) != 0)
     {
-      if (length != 0)
+      match_data->subject =
+          match_data->memctl.malloc(CU2BYTES(length + 1), match_data->memctl.memory_data);
+      if (match_data->subject == NULL)
       {
-        match_data->subject =
-            match_data->memctl.malloc(CU2BYTES(length), match_data->memctl.memory_data);
-        if (match_data->subject == NULL)
-          return match_data->rc = PCRE2_ERROR_NOMEMORY;
-        memcpy((void *)match_data->subject, subject, CU2BYTES(length));
+        match_data->subject_length = 0;
+        return match_data->rc = PCRE2_ERROR_NOMEMORY;
       }
-      else
-      {
-        match_data->subject = NULL;
-      }
+
+      memcpy((void *)match_data->subject, subject, CU2BYTES(length));
+      ((PCRE2_UCHAR *)match_data->subject)[length] = 0;
 
       match_data->flags |= PCRE2_MD_COPIED_SUBJECT;
     }
@@ -8942,18 +8943,18 @@ ENDLOOP:
         ((mb->last_used_ptr > mb->end_match_ptr) ? mb->last_used_ptr : mb->end_match_ptr) - subject;
     if ((options & PCRE2_COPY_MATCHED_SUBJECT) != 0)
     {
-      if (length != 0)
+      match_data->subject =
+          match_data->memctl.malloc(CU2BYTES(length + 1), match_data->memctl.memory_data);
+      if (match_data->subject == NULL)
       {
-        match_data->subject =
-            match_data->memctl.malloc(CU2BYTES(length), match_data->memctl.memory_data);
-        if (match_data->subject == NULL)
-          return match_data->rc = PCRE2_ERROR_NOMEMORY;
-        memcpy((void *)match_data->subject, subject, CU2BYTES(length));
+        match_data->subject_length = 0;
+        return match_data->rc = PCRE2_ERROR_NOMEMORY;
       }
-      else
-      {
-        match_data->subject = NULL;
-      }
+
+      /* PCRE2 does not require the copied subject to be zero-terminated. However,
+      it is exposed to clients through pcre2_get_subject, who might appreciate this. */
+      memcpy((void *)match_data->subject, subject, CU2BYTES(length));
+      ((PCRE2_UCHAR *)match_data->subject)[length] = 0;
 
       match_data->flags |= PCRE2_MD_COPIED_SUBJECT;
     }

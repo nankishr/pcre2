@@ -1800,7 +1800,7 @@ show_pattern_info(void)
           ? callout_enumerate_function
           :
           /* Exercise the callout enumeration code with a dummy callback to make sure
-    it works. */
+          it works. */
           callout_enumerate_function_void,
       NULL);
   if (rc != 0)
@@ -6424,11 +6424,20 @@ unittest(void)
   rc = pcre2_set_compile_extra_options(test_pat_context, 0);
   ASSERT(rc == 0, "pcre2_set_compile_extra_options()");
 
+  rc = pcre2_set_compile_extra_options(NULL, 0);
+  ASSERT(rc == PCRE2_ERROR_NULL, "pcre2_set_compile_extra_options(null)");
+
   rc = pcre2_set_max_pattern_length(test_pat_context, 10);
   ASSERT(rc == 0, "pcre2_set_max_pattern_length()");
 
+  rc = pcre2_set_max_pattern_length(NULL, 10);
+  ASSERT(rc == PCRE2_ERROR_NULL, "pcre2_set_max_pattern_length(null)");
+
   rc = pcre2_set_max_pattern_compiled_length(test_pat_context, 256);
   ASSERT(rc == 0, "pcre2_set_max_pattern_compiled_length()");
+
+  rc = pcre2_set_max_pattern_compiled_length(NULL, 256);
+  ASSERT(rc == PCRE2_ERROR_NULL, "pcre2_set_max_pattern_compiled_length(null)");
 
   rc = pcre2_set_max_varlookbehind(test_pat_context, 0);
   ASSERT(rc == 0, "pcre2_set_max_varlookbehind()");
@@ -6437,6 +6446,9 @@ unittest(void)
   /* test setting offset limit */
   rc = pcre2_set_offset_limit(test_dat_context, 999);
   ASSERT(rc == 0, "pcre2_set_offset_limit()");
+
+  rc = pcre2_set_offset_limit(NULL, 999);
+  ASSERT(rc == PCRE2_ERROR_NULL, "pcre2_set_offset_limit(null)");
 
   sizeval = 123;
   rc = pcre2_get_offset_limit(test_dat_context, &sizeval);
@@ -6506,6 +6518,9 @@ unittest(void)
   rc = pcre2_set_parens_nest_limit(test_pat_context, 100);
   ASSERT(rc == 0, "pcre2_set_parens_nest_limit()");
 
+  rc = pcre2_set_parens_nest_limit(NULL, 100);
+  ASSERT(rc == PCRE2_ERROR_NULL, "pcre2_set_parens_nest_limit(null)");
+
   uval = 123;
   rc = pcre2_get_parens_nest_limit(test_pat_context, &uval);
   ASSERT(rc == 0, "pcre2_get_parens_nest_limit()");
@@ -6542,6 +6557,9 @@ unittest(void)
   rc = pcre2_set_depth_limit(test_dat_context, 123456);
   ASSERT(rc == 0, "pcre2_set_depth_limit()");
 
+  rc = pcre2_set_depth_limit(NULL, 123456);
+  ASSERT(rc == PCRE2_ERROR_NULL, "pcre2_set_depth_limit(null)");
+
   uval = 123;
   rc = pcre2_get_depth_limit(test_dat_context, &uval);
   ASSERT(rc == 0, "pcre2_get_depth_limit()");
@@ -6560,6 +6578,9 @@ unittest(void)
   rc = pcre2_set_heap_limit(test_dat_context, 123456);
   ASSERT(rc == 0, "pcre2_set_heap_limit()");
 
+  rc = pcre2_set_heap_limit(NULL, 123456);
+  ASSERT(rc == PCRE2_ERROR_NULL, "pcre2_set_heap_limit(null)");
+
   uval = 123;
   rc = pcre2_get_heap_limit(test_dat_context, &uval);
   ASSERT(rc == 0, "pcre2_get_heap_limit()");
@@ -6577,6 +6598,9 @@ unittest(void)
   /* test setting match_limit */
   rc = pcre2_set_match_limit(test_dat_context, 123456);
   ASSERT(rc == 0, "pcre2_set_match_limit()");
+
+  rc = pcre2_set_match_limit(NULL, 123456);
+  ASSERT(rc == PCRE2_ERROR_NULL, "pcre2_set_match_limit(null)");
 
   uval = 123;
   rc = pcre2_get_match_limit(test_dat_context, &uval);
@@ -6677,8 +6701,20 @@ unittest(void)
   ASSERT(test_match_data != NULL, "pcre2_match_data_create_from_pattern()");
 
   rc = pcre2_match(test_compiled_code, pattern, PCRE2_ZERO_TERMINATED, 0,
+                   0, test_match_data, NULL);
+  ASSERT(rc == 1, "pcre2_match()");
+  ASSERT(pcre2_get_subject(test_match_data, NULL) == pattern, "pcre2_get_subject()");
+  sizeval = 123;
+  ASSERT(pcre2_get_subject(test_match_data, &sizeval) == pattern, "pcre2_get_subject()");
+  ASSERT(sizeval == pcre2_strlen(pattern), "pcre2_get_subject() length");
+
+  rc = pcre2_match(test_compiled_code, pattern, PCRE2_ZERO_TERMINATED, 0,
                    PCRE2_COPY_MATCHED_SUBJECT, test_match_data, NULL);
   ASSERT(rc == 1, "pcre2_match()");
+  ASSERT(pcre2_get_subject(test_match_data, NULL) != pattern, "pcre2_get_subject()");
+  sizeval = 123;
+  ASSERT(memcmp(pattern, pcre2_get_subject(test_match_data, &sizeval), (pcre2_strlen(pattern) + 1) * sizeof(PCRE2_UCHAR)) == 0, "pcre2_get_subject()");
+  ASSERT(sizeval == pcre2_strlen(pattern), "pcre2_get_subject() length");
 
   pcre2_match_data_free(test_match_data);
   test_match_data = NULL;

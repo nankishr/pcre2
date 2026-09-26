@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: pcre2_match
 .\"    Author: [see the "AUTHOR(S)" section]
-.\" Generator: Asciidoctor 2.0.20
+.\" Generator: Asciidoctor 2.0.26
 .\"      Date: 27 January 2024
 .\"    Manual: PCRE2
 .\"    Source: PCRE2 10.49-DEV
@@ -28,7 +28,7 @@
 .  LINKSTYLE blue R < >
 .\}
 .SH "NAME"
-pcre2_match \- match a compiled pattern
+pcre2_match \- match a compiled pattern to a subject string (Perl compatible)
 .SH "SYNOPSIS"
 .sp
 .ss \n[.ss]
@@ -84,7 +84,7 @@ Points to a match data block, for results
 .TP 13
 \fImcontext\fP
 .ad l
-Points to a match context, or is \f(CRNULL\fP
+Points to a match context, or is \fBNULL\fP
 .PD
 .RE
 .PP
@@ -102,7 +102,6 @@ A match context is needed only if you want to:
 .\}
 Set up a callout function
 .RE
-.sp
 .RS 4
 .ie n \{\
 \h'-04'\(bu\h'+03'\c
@@ -113,7 +112,6 @@ Set up a callout function
 .\}
 Set a matching offset limit
 .RE
-.sp
 .RS 4
 .ie n \{\
 \h'-04'\(bu\h'+03'\c
@@ -124,7 +122,6 @@ Set a matching offset limit
 .\}
 Change the heap memory limit
 .RE
-.sp
 .RS 4
 .ie n \{\
 \h'-04'\(bu\h'+03'\c
@@ -135,7 +132,6 @@ Change the heap memory limit
 .\}
 Change the backtracking match limit
 .RE
-.sp
 .RS 4
 .ie n \{\
 \h'-04'\(bu\h'+03'\c
@@ -146,7 +142,6 @@ Change the backtracking match limit
 .\}
 Change the backtracking depth limit
 .RE
-.sp
 .RS 4
 .ie n \{\
 \h'-04'\(bu\h'+03'\c
@@ -164,53 +159,53 @@ terminated by a binary zero code unit. The options are:
 .sp
 .RS 4
 .PD 0
-.TP 24
+.TP 23
 \fBPCRE2_ANCHORED\fP
 .ad l
 Match only at the first position
-.TP 24
+.TP 23
 \fBPCRE2_COPY_MATCHED_SUBJECT\fP
 .ad l
 On success, make a private subject copy
-.TP 24
+.TP 23
 \fBPCRE2_DISABLE_RECURSELOOP_CHECK\fP
 .ad l
 Only useful in rare cases; use with care
-.TP 24
+.TP 23
 \fBPCRE2_ENDANCHORED\fP
 .ad l
 Pattern can match only at end of subject
-.TP 24
+.TP 23
 \fBPCRE2_NOTBOL\fP
 .ad l
 Subject string is not the beginning of a line
-.TP 24
+.TP 23
 \fBPCRE2_NOTEOL\fP
 .ad l
 Subject string is not the end of a line
-.TP 24
+.TP 23
 \fBPCRE2_NOTEMPTY\fP
 .ad l
 An empty string is not a valid match
-.TP 24
+.TP 23
 \fBPCRE2_NOTEMPTY_ATSTART\fP
 .ad l
 An empty string at the start of the subject is not a valid match
-.TP 24
+.TP 23
 \fBPCRE2_NO_JIT\fP
 .ad l
 Do not use JIT matching
-.TP 24
+.TP 23
 \fBPCRE2_NO_UTF_CHECK\fP
 .ad l
 Do not check the subject for UTF validity (only relevant if
 \fBPCRE2_UTF\fP was set at compile time)
-.TP 24
+.TP 23
 \fBPCRE2_PARTIAL_HARD\fP
 .ad l
 Return \fBPCRE2_ERROR_PARTIAL\fP for a partial match even if there is a
 full match
-.TP 24
+.TP 23
 \fBPCRE2_PARTIAL_SOFT\fP
 .ad l
 Return \fBPCRE2_ERROR_PARTIAL\fP for a partial match if no full matches
